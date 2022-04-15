@@ -28,6 +28,8 @@ async function createCourse() {
 }
 
 async function getCourses() {
+  const pageNumber = 2;
+  const pageSize = 10;
   const courses = await Course
     //.find({ author: "BAD", isPublished: true })
     //.find({ price: { $gt: 10, $lte: 20 } })
@@ -35,10 +37,12 @@ async function getCourses() {
     //.find()
     //.or([{ author: "BAD" }, { isPublished: true }])
     //.and([])
-    .find({author: /^BAD/}) // Regex
-    .limit(10)
+    .find({ author: /^BAD/ }) // Regex
+    .skip((pageNumber - 1) * pageSize) // Pagination
+    .limit(pageSize)
     .sort({ name: 1 })
-    .select({ name: 1, tags: 1 });
+    //.select({ name: 1, tags: 1 });
+    .count();
   console.log(courses);
 }
 
