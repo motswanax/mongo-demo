@@ -6,11 +6,24 @@ mongoose
   .catch((err) => console.error("Could not connect to MongoDB...", err));
 
 const courseSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, required: true, minlength: 5, maxlength: 255 },
+  category: {
+    type: String,
+    required: true,
+    enum: ["web", "mobile", "network"],
+  },
   author: String,
   tags: [String],
   date: { type: Date, default: Date.now },
   isPublished: Boolean,
+  price: {
+    type: Number,
+    rquired: function () {
+      return this.isPublished;
+    },
+    min: 10,
+    max: 200,
+  },
 });
 
 const Course = mongoose.model("Course", courseSchema); // This is a class.
@@ -18,13 +31,19 @@ const Course = mongoose.model("Course", courseSchema); // This is a class.
 async function createCourse() {
   const course = new Course({
     name: "Angular.js",
+    category: "-",
     author: "BAD",
     tags: ["angular", "frontend"],
     isPublished: true,
+    price: 15,
   });
 
-  const result = await course.save();
-  console.log(result);
+  try {
+    const result = await course.save();
+    console.log(result);
+  } catch (error) {
+    console.log(error.message);
+  }
 }
 
 async function getCourses() {
@@ -70,4 +89,5 @@ async function removeCourse(id) {
   console.log(result);
 }
 
-removeCourse("625754269a8d01b601c918eb");
+//removeCourse("625754269a8d01b601c918eb");
+createCourse();
